@@ -4,9 +4,11 @@ import os
 from BeautifulSoup import BeautifulSoup
 import validators
 import tldextract
+from time import time
 
 CRAWLED_DATA_PATH = "/data/crawled/"
 PROJECT_DIR = os.getcwd()
+TIME_INTERVAL = 0.01
 
 # Todo: Add command line arguments
 
@@ -15,6 +17,7 @@ domain = tldextract.extract(seed).domain
 visited_urls = []
 visit_queue = [seed]
 filter_urls = True
+last_visit = time()
 
 def isUrlDomain(url):
     urlDomain = tldextract.extract(url).domain
@@ -59,12 +62,17 @@ while(len(visit_queue) > 0):
     if current_url in visited_urls:
         continue
 
-    visited_urls.append(current_url)
+    current_time = time()
+    if current_time - last_visit < TIME_INTERVAL:
+        visit_queue.append(current_url)
+        print "Time interval not reached. Will visit later."
+        continue
 
-    # Todo: Add module to avoid overload
+    visited_urls.append(current_url)
 
     # Visit url
     print "Visit ", current_url
+    last_visit = time()
     try:
         next_urls = visit(current_url, filter_urls)
         visit_queue += next_urls
