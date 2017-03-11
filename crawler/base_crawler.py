@@ -1,6 +1,8 @@
 import urllib
 import io
 import os
+import sys
+import getopt
 from BeautifulSoup import BeautifulSoup
 import validators
 import tldextract
@@ -10,14 +12,34 @@ CRAWLED_DATA_PATH = "/data/crawled/"
 PROJECT_DIR = os.getcwd()
 TIME_INTERVAL = 0.01
 
-# Todo: Add command line arguments
-
-seed = "https://www.vagalume.com.br/"
-domain = tldextract.extract(seed).domain
+command_line_args = sys.argv
+seed = ''
+# "https://www.vagalume.com.br/"
 visited_urls = []
 visit_queue = [seed]
 filter_urls = True
 last_visit = time()
+
+# Get command line options
+try:
+    opts, args = getopt.getopt(command_line_args[1:], "hs:f:", ["seed_url=", "filter_urls="])
+except getopt.GetoptError:
+    print 'Usage: base_crawler.py -f <seed_url> -f <filter_urls>'
+    sys.exit(2)
+for opt, arg in opts:
+    if opt == '-h':
+        print 'Usage: base_crawler.py -f <seed_url> -f <filter_urls>'
+        sys.exit()
+    elif opt in ("-f", "--filter_urls"):
+        filter_urls = arg
+    elif opt in ("-s", "--seed_url"):
+        seed = arg
+
+if not validators.url(seed):
+    print "URL is not valid."
+    sys.exit()
+
+domain = tldextract.extract(seed).domain
 
 def isUrlDomain(url):
     urlDomain = tldextract.extract(url).domain
@@ -52,8 +74,6 @@ def visit(url, filter):
             valid_links.append(link)
 
     return valid_links
-
-# Basic script
 
 while(len(visit_queue) > 0):
     current_url = visit_queue[0]
