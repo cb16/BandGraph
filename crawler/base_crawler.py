@@ -1,20 +1,30 @@
 import urllib
 import io
+import os
 from BeautifulSoup import BeautifulSoup
 import validators
+import tldextract
 
-CRAWLED_DATA_PATH = "data/crawled/"
+CRAWLED_DATA_PATH = "/data/crawled/"
+PROJECT_DIR = os.getcwd()
 
-html = []
+# Todo: Add command line arguments
+
+seed = "https://www.vagalume.com.br/"
+domain = tldextract.extract(seed).domain
+visited_urls = []
+visit_queue = [seed]
+filter_urls = True
 
 def isUrlDomain(url):
-    # Todo: Implement domain checker
+    urlDomain = tldextract.extract(url).domain
+    if urlDomain != domain:
+        return False
     return True
 
 def save(url, raw_html):
-    modified_url = url.replace("/", "\\")
-    file = open("../" + CRAWLED_DATA_PATH + modified_url + ".html", "w")
-    print "going"
+    modified_url = url.replace("/", "|")
+    file = open(PROJECT_DIR + CRAWLED_DATA_PATH + modified_url + ".html", "w")
     file.write(BeautifulSoup.prettify(raw_html))
     file.close()
 
@@ -41,15 +51,6 @@ def visit(url, filter):
     return valid_links
 
 # Basic script
-
-# Todo: Add command line arguments
-
-# Todo: Get the domain of the seed
-domain = "vagalume"
-seed = "https://www.vagalume.com.br/"
-visited_urls = []
-visit_queue = [seed]
-filter_urls = True
 
 while(len(visit_queue) > 0):
     current_url = visit_queue[0]
