@@ -3,7 +3,7 @@ import io
 from BeautifulSoup import BeautifulSoup
 import validators
 
-CRAWLED_DATA_PATH = "Data/crawled/"
+CRAWLED_DATA_PATH = "data/crawled/"
 
 html = []
 
@@ -42,10 +42,14 @@ def visit(url, filter):
 
 # Basic script
 
+# Todo: Add command line arguments
+
+# Todo: Get the domain of the seed
 domain = "vagalume"
 seed = "https://www.vagalume.com.br/"
 visited_urls = []
 visit_queue = [seed]
+filter_urls = True
 
 while(len(visit_queue) > 0):
     current_url = visit_queue[0]
@@ -56,7 +60,7 @@ while(len(visit_queue) > 0):
 
     visited_urls.append(current_url)
 
-    filter_urls = True
+    # Todo: Add module to avoid overload
 
     # Visit url
     print "Visit ", current_url
